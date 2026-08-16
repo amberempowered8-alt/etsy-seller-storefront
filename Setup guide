@@ -1,0 +1,32 @@
+# Etsy / Product Seller Storefront — Setup Guide
+
+## What You Got
+- A ready-to-launch storefront for handmade, print-on-demand, or digital product shops
+- Free hosting, no monthly fees, ever
+- No coding needed — everything is edited in one simple file
+
+## Step 1: Add Your Info
+Open `app.js`. At the top, you'll see a `CONFIG` section — this is the only place you need to edit. Replace the placeholder text with your own:
+- Your shop name
+- Your headline and short intro
+- Your color/variant swatches (use your real product colors)
+- Your product categories
+- Your featured products
+- Your reviews
+
+## Step 2: Connect Your Shop Link
+Still inside `CONFIG`, find `shopLink` and replace the placeholder with your real Etsy shop URL or checkout link. This is what the "Visit the Shop" and "Browse the Shop" buttons point to.
+
+## Step 3: Add Your Photos
+Swap the "Shop Photo" and "Product Photo" placeholder boxes for real photos of your shop and products — this is what actually sells the piece.
+
+## Step 4: Go Live (Free Hosting)
+1. Click "Use this template" on GitHub to copy this into your own account.
+2. Go to Settings → Pages, and turn on GitHub Pages.
+3. Your site is now live at no cost, and stays free — no monthly bill.
+
+## A Note on "Free"
+Hosting is completely free to start. If you ever outgrow the free tier (very high traffic), a low-cost paid step may apply — but you'll never be locked into a recurring platform fee just to keep your site online.
+
+## Questions?
+This is a self-guided template. For setup help, reach out through your support link.
