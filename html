@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — Handmade & Digital Goods</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <span class="brand" id="brand-name">Shop Name</span>
+    <nav class="nav">
+      <a href="#shop">Shop</a>
+      <a href="#about">About</a>
+      <a href="#reviews">Reviews</a>
+    </nav>
+    <a href="#shop" class="btn btn-kiln btn-small">Shop Now</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO: The Swatch Strip -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Handmade &amp; Made-to-Order</p>
+        <h1>Every piece, made to fit you.</h1>
+        <p class="hero-sub" id="hero-subtext">Pick your color, pick your size — every item is made or printed just for you, no mass-produced stock sitting in a warehouse.</p>
+        <a href="#shop" class="btn btn-kiln">Browse the Shop</a>
+      </div>
+
+      <div class="swatch-panel" aria-label="Available variants">
+        <div class="swatch-head">
+          <span class="swatch-title">Choose Your Style</span>
+          <span class="swatch-sub" id="swatch-count">6 Colors</span>
+        </div>
+        <div class="swatch-strip" id="swatch-strip">
+          <!-- populated by app.js from CONFIG.swatches -->
+        </div>
+        <p class="swatch-active" id="swatch-active-label">Terracotta — most popular</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST STRIP -->
+  <section class="trust-strip">
+    <div class="wrap trust-row" id="trust-row">
+      <!-- populated by app.js from CONFIG.credentials -->
+    </div>
+  </section>
+
+  <!-- SHOP CATEGORIES -->
+  <section id="shop" class="categories">
+    <div class="wrap">
+      <p class="eyebrow center">Shop By Type</p>
+      <h2 class="center">Find what you're looking for</h2>
+      <div class="category-grid" id="category-grid">
+        <!-- populated by app.js from CONFIG.categories -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="products">
+    <div class="wrap">
+      <p class="eyebrow center">Fan Favorites</p>
+      <h2 class="center">Best sellers right now</h2>
+      <div class="product-grid" id="product-grid">
+        <!-- populated by app.js from CONFIG.products -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <div class="wrap about-grid">
+      <div class="about-photo" aria-hidden="true">
+        <span class="photo-label">Shop Photo</span>
+      </div>
+      <div class="about-copy">
+        <p class="eyebrow">Behind the Shop</p>
+        <h2 id="about-heading">A little about this shop</h2>
+        <p id="about-body">Replace this with your own story — what you make, why you started, and what makes each piece worth the wait. Buyers connect with the maker, not just the product.</p>
+        <ul class="about-facts" id="about-facts">
+          <!-- populated by app.js from CONFIG.facts -->
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="reviews">
+    <div class="wrap">
+      <p class="eyebrow center">From Real Customers</p>
+      <h2 class="center">What people are saying</h2>
+      <div class="review-grid" id="review-grid">
+        <!-- populated by app.js from CONFIG.reviews -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="wrap cta-inner">
+      <div>
+        <p class="eyebrow">Ready When You Are</p>
+        <h2>Find your piece.</h2>
+        <p class="hero-sub">New colors and styles drop often — this is what's available right now.</p>
+      </div>
+      <div class="cta-card">
+        <p class="swatch-title">Shop the Full Collection</p>
+        <p class="cta-note">Every item ships direct from the maker.</p>
+        <!-- CLIENT ACTION REQUIRED: replace # with your Etsy shop or storefront link -->
+        <a href="#" id="shop-link" class="btn btn-kiln btn-wide">Visit the Shop</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-row">
+    <span id="footer-name">Shop Name</span>
+    <span class="footer-muted">Handmade to order &amp; shipped with care</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
