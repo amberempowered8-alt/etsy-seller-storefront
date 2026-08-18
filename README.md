@@ -36,6 +36,26 @@ Swap the "Shop Photo" and "Product Photo" placeholder boxes for real photos of y
 
 **Give it a minute.** After you commit changes or turn on Pages for the first time, GitHub needs a minute or two to rebuild your site. If it doesn't show your changes right away, wait a minute and refresh before assuming something's wrong.
 
+## Connecting a Custom Domain (e.g., www.yourshop.com)
+
+Already have your own domain from Squarespace Domains, Namecheap, GoDaddy, or Cloudflare? Here's how to point it at your free GitHub Pages site instead of using the default `github.io` link.
+
+**1. Set it in GitHub:**
+1. In your repository, go to **Settings → Pages**.
+2. Scroll to **Custom domain**, enter your domain (e.g., `www.yourshop.com`), and click **Save**.
+3. Check the box for **Enforce HTTPS** — this turns on your free SSL security certificate.
+
+**2. Update your domain's DNS settings:**
+Log into your domain provider's DNS management panel and add:
+- **CNAME Record:** Host/Name: `www` → Value/Target: `YOUR_GITHUB_USERNAME.github.io`
+- **A Records** (for the root domain `@`), pointing to GitHub's IP addresses:
+  - `185.199.108.153`
+  - `185.199.109.153`
+  - `185.199.110.153`
+  - `185.199.111.153`
+
+DNS changes typically take 5–30 minutes to go live, sometimes longer.
+
 ## A Note on "Free"
 Hosting is completely free to start. If you ever outgrow the free tier (very high traffic), a low-cost paid step may apply — but you'll never be locked into a recurring platform fee just to keep your site online.
 
