@@ -13,6 +13,11 @@ const CONFIG = {
     // CLIENT ACTION REQUIRED: replace with your real Etsy shop or checkout link
     shopLink: "https://your-etsy-shop-link.com",
 
+    // Optional: paste a photo URL here (or, if you uploaded a photo file into
+    // this repo, just put its file name, e.g. "shop-photo.jpg"). Leave this
+    // as "" to keep the placeholder box shown in the About section.
+    photoUrl: "",
+
     // Shown in the hero's swatch strip. Use real hex colors from your actual products.
     swatches: [
         { name: "Terracotta", hex: "#E8735A", note: "most popular" },
@@ -35,20 +40,26 @@ const CONFIG = {
         { icon: "📦", name: "Custom Orders", count: "Personalized" }
     ],
 
+    // Optional per-product photo: set imageUrl to a photo link (or an
+    // uploaded file name like "product-1.jpg"). Leave "" to show the
+    // placeholder box for that product.
     products: [
         {
             name: "Product One",
             price: "$28.00",
+            imageUrl: "",
             swatchHexes: ["#E8735A", "#D4A73D", "#3A3530"]
         },
         {
             name: "Product Two",
             price: "$34.00",
+            imageUrl: "",
             swatchHexes: ["#7C8B6F", "#D9A7A0"]
         },
         {
             name: "Product Three",
             price: "$19.00",
+            imageUrl: "",
             swatchHexes: ["#EDE4D3", "#3A3530", "#E8735A"]
         }
     ],
@@ -97,6 +108,17 @@ function renderText() {
 
     const swatchCount = document.getElementById('swatch-count');
     if (swatchCount) swatchCount.textContent = `${CONFIG.swatches.length} Colors`;
+}
+
+function renderPhoto() {
+    const container = document.getElementById('about-photo');
+    if (!container) return;
+
+    if (CONFIG.photoUrl && CONFIG.photoUrl.trim() !== '') {
+        container.innerHTML = `<img src="${escapeHTML(CONFIG.photoUrl)}" alt="${escapeHTML(CONFIG.shopName)}">`;
+        container.classList.add('has-photo');
+    }
+    // If photoUrl is blank, the placeholder box (in index.html) stays as-is.
 }
 
 function renderSwatches() {
@@ -156,9 +178,14 @@ function renderAboutFacts() {
 function renderProducts() {
     const grid = document.getElementById('product-grid');
     if (!grid) return;
-    grid.innerHTML = CONFIG.products.map(p => `
+    grid.innerHTML = CONFIG.products.map(p => {
+        const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
+        const imageMarkup = hasImage
+            ? `<img src="${escapeHTML(p.imageUrl)}" alt="${escapeHTML(p.name)}">`
+            : `Product Photo`;
+        return `
         <div class="product-card reveal">
-            <div class="product-image">Product Photo</div>
+            <div class="product-image${hasImage ? ' has-photo' : ''}">${imageMarkup}</div>
             <div class="product-body">
                 <p class="product-name">${escapeHTML(p.name)}</p>
                 <p class="product-price mono">${escapeHTML(p.price)}</p>
@@ -166,7 +193,8 @@ function renderProducts() {
                     ${p.swatchHexes.map(hex => `<span class="mini-dot" style="background:${escapeHTML(hex)};"></span>`).join('')}
                 </div>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 function renderReviews() {
@@ -199,6 +227,7 @@ function initScrollReveal() {
 
 function init() {
     renderText();
+    renderPhoto();
     renderSwatches();
     renderTrust();
     renderCategories();
