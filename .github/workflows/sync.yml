@@ -1,0 +1,74 @@
+name: Sync products & reviews from Airtable
+
+# This workflow fetches your Airtable Products and Reviews tables and
+# publishes them as plain data files your website reads. Your Airtable
+# token is stored as an encrypted GitHub secret and is NEVER written into
+# any file in this repo — it only exists inside this workflow run, on
+# GitHub's servers.
+#
+# Runs automatically every 30 minutes, and any time you push a change.
+# You can also trigger it manually from the Actions tab (see the GitHub
+# Actions Quick-Start SOP for exactly how).
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fetch published Products from Airtable
+        env:
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          AIRTABLE_PRODUCTS_TABLE: ${{ secrets.AIRTABLE_PRODUCTS_TABLE }}
+        run: |
+          mkdir -p data
+          export TABLE="${AIRTABLE_PRODUCTS_TABLE:-Products}"
+          ENCODED_TABLE=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['TABLE']))")
+          ENCODED_FILTER=$(python3 -c "import urllib.parse; print(urllib.parse.quote(\"Status='Published'\"))")
+          curl -sS -f \
+            -H "Authorization: Bearer $AIRTABLE_TOKEN" \
+            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/$ENCODED_TABLE?filterByFormula=$ENCODED_FILTER" \
+            -o data/products.json
+          echo "Fetched products:"
+          cat data/products.json
+
+      - name: Fetch published Reviews from Airtable
+        env:
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          AIRTABLE_REVIEWS_TABLE: ${{ secrets.AIRTABLE_REVIEWS_TABLE }}
+        run: |
+          mkdir -p data
+          export TABLE="${AIRTABLE_REVIEWS_TABLE:-Reviews}"
+          ENCODED_TABLE=$(python3 -c "import urllib.parse,os; print(urllib.parse.quote(os.environ['TABLE']))")
+          ENCODED_FILTER=$(python3 -c "import urllib.parse; print(urllib.parse.quote(\"Status='Published'\"))")
+          curl -sS -f \
+            -H "Authorization: Bearer $AIRTABLE_TOKEN" \
+            "https://api.airtable.com/v0/$AIRTABLE_BASE_ID/$ENCODED_TABLE?filterByFormula=$ENCODED_FILTER" \
+            -o data/reviews.json
+          echo "Fetched reviews:"
+          cat data/reviews.json
+
+      - name: Commit updated data
+        run: |
+          git config user.name "catalog-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/products.json data/reviews.json
+          if git diff --cached --quiet; then
+            echo "No data changes."
+          else
+            git commit -m "Sync products & reviews from Airtable [automated]"
+            git push
+          fi
