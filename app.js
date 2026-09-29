@@ -2,6 +2,10 @@
 // ETSY / PRODUCT SELLER STOREFRONT — CONFIG
 // Edit everything in the CONFIG object below. You don't need to touch
 // index.html or style.css to customize the content.
+//
+// Your PRODUCTS and REVIEWS are kept up to date automatically from
+// Airtable — see SETUP-GUIDE.md for the one-time setup. You never paste
+// any secret token into this file.
 // =========================================================================
 
 const CONFIG = {
@@ -40,30 +44,6 @@ const CONFIG = {
         { icon: "📦", name: "Custom Orders", count: "Personalized" }
     ],
 
-    // Optional per-product photo: set imageUrl to a photo link (or an
-    // uploaded file name like "product-1.jpg"). Leave "" to show the
-    // placeholder box for that product.
-    products: [
-        {
-            name: "Product One",
-            price: "$28.00",
-            imageUrl: "",
-            swatchHexes: ["#E8735A", "#D4A73D", "#3A3530"]
-        },
-        {
-            name: "Product Two",
-            price: "$34.00",
-            imageUrl: "",
-            swatchHexes: ["#7C8B6F", "#D9A7A0"]
-        },
-        {
-            name: "Product Three",
-            price: "$19.00",
-            imageUrl: "",
-            swatchHexes: ["#EDE4D3", "#3A3530", "#E8735A"]
-        }
-    ],
-
     aboutHeading: "A little about this shop",
     aboutBody: "Replace this with your own story — what you make, why you started, and what makes each piece worth the wait. Buyers connect with the maker, not just the product.",
     aboutFacts: [
@@ -72,11 +52,9 @@ const CONFIG = {
         "Small batch, not mass produced"
     ],
 
-    reviews: [
-        { stars: "★★★★★", quote: "Exactly as pictured and shipped fast. Already ordered a second one.", name: "— Verified Buyer" },
-        { stars: "★★★★★", quote: "The quality is so much better than I expected for the price.", name: "— Verified Buyer" },
-        { stars: "★★★★★", quote: "Loved being able to pick my own color combo. Will be back.", name: "— Verified Buyer" }
-    ]
+    // Products and Reviews are no longer edited here — they're synced
+    // automatically from your Airtable base into data/products.json and
+    // data/reviews.json. See SETUP-GUIDE.md.
 };
 
 // =========================================================================
@@ -175,37 +153,108 @@ function renderAboutFacts() {
     list.innerHTML = CONFIG.aboutFacts.map(f => `<li>${escapeHTML(f)}</li>`).join('');
 }
 
-function renderProducts() {
+/**
+ * Loads your Products grid from data/products.json — a plain data file that
+ * a scheduled GitHub Action keeps in sync with the "Products" table in your
+ * Airtable base. This file never contains your Airtable token; it only
+ * contains the published records themselves. See SETUP-GUIDE.md.
+ */
+async function renderProducts() {
     const grid = document.getElementById('product-grid');
     if (!grid) return;
-    grid.innerHTML = CONFIG.products.map(p => {
-        const hasImage = p.imageUrl && p.imageUrl.trim() !== '';
-        const imageMarkup = hasImage
-            ? `<img src="${escapeHTML(p.imageUrl)}" alt="${escapeHTML(p.name)}">`
-            : `Product Photo`;
-        return `
-        <div class="product-card reveal">
-            <div class="product-image${hasImage ? ' has-photo' : ''}">${imageMarkup}</div>
-            <div class="product-body">
-                <p class="product-name">${escapeHTML(p.name)}</p>
-                <p class="product-price mono">${escapeHTML(p.price)}</p>
-                <div class="product-swatches">
-                    ${p.swatchHexes.map(hex => `<span class="mini-dot" style="background:${escapeHTML(hex)};"></span>`).join('')}
-                </div>
-            </div>
-        </div>`;
-    }).join('');
+
+    try {
+        const response = await fetch('data/products.json', { cache: 'no-store' });
+
+        if (!response.ok) {
+            grid.innerHTML = `<p class="loading">Your products will appear here once the automatic sync runs for the first time.</p>`;
+            return;
+        }
+
+        const data = await response.json();
+
+        if (!data.records || data.records.length === 0) {
+            grid.innerHTML = `<p class="loading">No published products yet. Set a row's Status to "Published" in your Products table to display it here.</p>`;
+            return;
+        }
+
+        grid.innerHTML = data.records.map(record => {
+            const fields = record.fields || {};
+            const name = fields['Product Name'] || 'Untitled Product';
+            const price = fields['Price'] || '';
+            const imageUrl = fields['Image URL'] || '';
+            const swatchHexes = (fields['Swatch Colors'] || '')
+                .split(',')
+                .map(hex => hex.trim())
+                .filter(Boolean);
+
+            const hasImage = imageUrl && imageUrl.trim() !== '';
+            const imageMarkup = hasImage
+                ? `<img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(name)}">`
+                : `Product Photo`;
+
+            return `
+                <div class="product-card reveal">
+                    <div class="product-image${hasImage ? ' has-photo' : ''}">${imageMarkup}</div>
+                    <div class="product-body">
+                        <p class="product-name">${escapeHTML(name)}</p>
+                        <p class="product-price mono">${escapeHTML(price)}</p>
+                        <div class="product-swatches">
+                            ${swatchHexes.map(hex => `<span class="mini-dot" style="background:${escapeHTML(hex)};"></span>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+
+    } catch (error) {
+        console.error('Products load error:', error);
+        grid.innerHTML = `<p class="loading">Couldn't load products right now. Check the Actions tab in your GitHub repo for errors.</p>`;
+    }
 }
 
-function renderReviews() {
+/**
+ * Loads your Reviews grid from data/reviews.json — synced from the
+ * "Reviews" table in your Airtable base the same way Products is.
+ */
+async function renderReviews() {
     const grid = document.getElementById('review-grid');
     if (!grid) return;
-    grid.innerHTML = CONFIG.reviews.map(r => `
-        <div class="review-card reveal">
-            <p class="review-stars">${r.stars}</p>
-            <p class="review-quote">"${escapeHTML(r.quote)}"</p>
-            <p class="review-name">${escapeHTML(r.name)}</p>
-        </div>`).join('');
+
+    try {
+        const response = await fetch('data/reviews.json', { cache: 'no-store' });
+
+        if (!response.ok) {
+            grid.innerHTML = `<p class="loading">Your reviews will appear here once the automatic sync runs for the first time.</p>`;
+            return;
+        }
+
+        const data = await response.json();
+
+        if (!data.records || data.records.length === 0) {
+            grid.innerHTML = `<p class="loading">No published reviews yet. Set a row's Status to "Published" in your Reviews table to display it here.</p>`;
+            return;
+        }
+
+        grid.innerHTML = data.records.map(record => {
+            const fields = record.fields || {};
+            const quote = fields['Quote'] || '';
+            const name = fields['Customer Name'] || 'Verified Buyer';
+            const rating = Number(fields['Rating']) || 5;
+            const clamped = Math.max(0, Math.min(5, rating));
+            const stars = '★'.repeat(clamped) + '☆'.repeat(5 - clamped);
+
+            return `
+                <div class="review-card reveal">
+                    <p class="review-stars">${stars}</p>
+                    <p class="review-quote">"${escapeHTML(quote)}"</p>
+                    <p class="review-name">— ${escapeHTML(name)}</p>
+                </div>`;
+        }).join('');
+
+    } catch (error) {
+        console.error('Reviews load error:', error);
+        grid.innerHTML = `<p class="loading">Couldn't load reviews right now. Check the Actions tab in your GitHub repo for errors.</p>`;
+    }
 }
 
 function initScrollReveal() {
@@ -225,15 +274,17 @@ function initScrollReveal() {
     items.forEach(el => observer.observe(el));
 }
 
-function init() {
+async function init() {
     renderText();
     renderPhoto();
     renderSwatches();
     renderTrust();
     renderCategories();
-    renderProducts();
     renderAboutFacts();
-    renderReviews();
+    // Wait for the Airtable-synced content so the .reveal scroll-in effect
+    // (set up right after) also applies to the product and review cards,
+    // not just the static sections.
+    await Promise.all([renderProducts(), renderReviews()]);
     initScrollReveal();
 }
 
