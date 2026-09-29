@@ -1,75 +1,100 @@
-# Etsy / Product Seller Storefront — Setup Guide
-
-## Your Repo Link
-https://github.com/amberempowered8-alt/etsy-seller-storefront
-
-Click **"Use this template"** → **Create a new repository** to copy this storefront into your own free GitHub account. Start here before anything else below.
+# Etsy Seller Storefront Template — Setup Guide
 
 ## What You Got
-- A ready-to-launch storefront for handmade, print-on-demand, or digital product shops
+- A ready-to-launch storefront for handmade, print-on-demand, or made-to-order shops
 - Free hosting, no monthly fees, ever
-- No coding needed — everything is edited in one simple file
+- Site-wide details edited in one simple file — Products and Reviews update themselves from your own free Airtable database, no coding required
 
-## Step 1: Add Your Info
+## What's Included in Your Package
+- `index.html` — your site's structure and content sections
+- `style.css` — the visual design (colors, layout, fonts)
+- `app.js` — site-wide settings (CONFIG) plus the engine that syncs your Products and Reviews sections from Airtable
+- `.github/workflows/sync.yml` — the automatic sync job
+- `SETUP-GUIDE.md` — this file
 
-Open `app.js`. At the top, you'll see a `CONFIG` section — this is the only place you need to edit. Replace the placeholder text with your own. Every field is named, so just search for the name below inside `CONFIG` (line numbers aren't listed here on purpose — they shift as you edit, but the field names never do):
+## Two Ways to Customize This Site
 
-- `shopName` — Your shop name
-- `heroHeadline` / `heroSubtext` — Your headline and short intro
-- `shopLink` — Your shop link (see Step 2 below — don't click the placeholder link, it's not a real destination)
-- `photoUrl` — Your Shop Photo (see Step 3 below)
-- `swatches` — Your color/variant swatches
-- `credentials` — Your trust badges (e.g. "500+ Items Shipped")
-- `categories` — Your product categories
-- `products` — Your featured products, including each product's own `imageUrl` (see Step 3 below)
-- `aboutHeading` / `aboutBody` / `aboutFacts` — Your "about" section
-- `reviews` — Your customer reviews
+**1. Site-wide details — edit in `app.js`.** Things that rarely change: your shop name, headline, shop link, photo, color swatches, credentials, categories, and about section. Open `app.js`, edit the `CONFIG` object at the top, save, and commit. No Airtable needed for any of this.
 
-To edit a file directly on GitHub: click the file, then the pencil icon (top right). When done, scroll down and click **"Commit changes"** — this is what actually saves your edits.
+**2. Products & Reviews — edit in Airtable.** These are the things you'll actually update over time (a new item you're selling, a new customer review). They live in two tables in your Airtable base and sync to the site automatically.
 
-## Step 2: Connect Your Shop Link
+## Quick Start Checklist
 
-Still inside `CONFIG`, find `shopLink` and replace the placeholder with your real Etsy shop URL or checkout link. Do not click the placeholder link as-is — it's not a real working page, just text meant to be replaced. This is what the "Visit the Shop" and "Browse the Shop" buttons point to.
+### Step 1: Add Your Info
+Open `app.js`. At the top, you'll see a `CONFIG` section. Replace the placeholder text with your own:
 
-## Step 3: Add Your Photos
+- `shopName` — Your shop's name
+- `heroHeadline` / `heroSubtext` — Your main headline and short intro
+- `shopLink` — Your real Etsy shop URL or checkout link (see Step 2 — don't leave the placeholder link live)
+- `photoUrl` — A link to your photo, or the file name if you uploaded a photo into this repo (see Step 3 — leave blank to keep the placeholder box)
+- `swatches` — Your real product color options (name, hex code, and an optional note like "most popular")
+- `credentials` — Your trust badges (orders shipped, rating, etc.)
+- `categories` — Your shop's product categories (icon, name, short count/description)
+- `aboutHeading` / `aboutBody` / `aboutFacts` — Your story and a few honest facts about how you make and ship
 
-There are two separate photo fields — both work the same way, and both are optional:
+### Step 2: Connect Your Shop Link
+Still inside `CONFIG`, find `shopLink` and replace the placeholder with your real Etsy shop URL (or your own checkout page). Do not leave the placeholder link live — it's not a real working page, just text meant to be replaced. This is what the "Visit the Shop" button points to.
 
-- **Shop Photo** — find `photoUrl` near the top of `CONFIG`. Paste in a link to a photo of you or your shop (or, if you uploaded a photo file into this repo, just put its file name, e.g. `"shop-photo.jpg"`).
-- **Product Photos** — inside the `products` array, each product has its own `imageUrl` field. Paste a photo link (or file name) for each product you want a real photo on.
+### Step 3: Add Your Photo
+In `app.js`, find `photoUrl` in `CONFIG` and paste a link to your photo. (If you'd rather upload a photo file directly into this repository, upload it, then enter its file name — for example `shop-photo.jpg` — as the value instead of a link.) Leave `photoUrl` blank to keep the placeholder box. A real photo builds trust faster than anything else on the page.
 
-Leave any of these fields as `""` (empty quotes) to keep that placeholder box showing instead — the site still works fine without photos, they just won't be filled in yet.
+### Step 4: Duplicate Your Database Blueprint
+1. Log into your free Airtable account.
+2. Open your Master Core Blueprint link and click **Duplicate Base** to save it into your own workspace.
+3. Confirm it has two tables: **Products** and **Reviews**, each with a `Status` field.
 
-**Don't have your photos hosted anywhere?** The simplest way: upload the photo file directly into your GitHub repo (drag it into the file list), then use its exact file name (e.g. `"my-shop.jpg"`) as the value.
+**Products table fields:**
+- `Product Name` — e.g. "Terracotta Mug"
+- `Price` — shown exactly as typed, e.g. "$28.00"
+- `Image URL` — optional; a link to your product photo (leave blank to show the placeholder box)
+- `Swatch Colors` — optional; the hex color dots to show on the card, separated by commas (e.g. `#E8735A, #D4A73D, #3A3530`)
+- `Status` — set to **Published** to make it live
 
-## Step 4: Go Live (Free Hosting)
+**Reviews table fields:**
+- `Customer Name` — e.g. "Verified Buyer" or a first name/initial, whatever your customer is comfortable with
+- `Quote` — the review text
+- `Rating` — a 1-5 star rating
+- `Status` — set to **Published** to make it live
 
-1. Click **"Use this template"** on GitHub to copy this into your own account (see link at the top of this doc).
-2. Go to **Settings → Pages**, and turn on GitHub Pages.
+### Step 5: Configure Your Secure Database Keys
+This template needs four GitHub repo secrets (Settings → Secrets and variables → Actions → New repository secret):
+- `AIRTABLE_TOKEN` — a Personal Access Token scoped to `data.records:read` on your duplicated base only
+- `AIRTABLE_BASE_ID` — found in your browser's address bar when viewing your base (starts with `app...`)
+- `AIRTABLE_PRODUCTS_TABLE` — the exact name of your Products table (defaults to `Products` if left blank)
+- `AIRTABLE_REVIEWS_TABLE` — the exact name of your Reviews table (defaults to `Reviews` if left blank)
+
+**Security best practice:** always restrict your token to Read-Only (`data.records:read`) access. This ensures visitors can never modify or erase records in your database.
+
+### Step 6: Go Live (Free Hosting)
+1. Click "Use this template" on GitHub to copy this into your own account, keeping the folder structure intact (`.github/workflows/sync.yml` must stay in that exact path).
+2. Go to Settings → Pages, and turn on GitHub Pages.
 3. Your site is now live at no cost, and stays free — no monthly bill.
 
-Give it a minute. After you commit changes or turn on Pages for the first time, GitHub needs a minute or two to rebuild your site. If it doesn't show your changes right away, wait a minute and refresh before assuming something's wrong.
+### Step 7: Trigger the First Sync
+The sync runs automatically every 30 minutes and on every push, but you don't have to wait: go to your repo's **Actions** tab → **Sync products & reviews from Airtable** → **Run workflow**. See the companion **GitHub Actions Quick-Start SOP** for the exact click-by-click.
 
-## ⚠️ Connecting a Custom Domain (We Strongly Recommend This)
+## Connecting a Custom Domain (e.g., www.yourdomain.com)
+Already have your own domain from Squarespace Domains, Namecheap, GoDaddy, or Cloudflare? Here's how to point it at your free GitHub Pages site instead of using the default `github.io` link — **we strongly recommend doing this**, since the default link will show our template account name instead of your own shop.
 
-If you leave your site on its default GitHub address, the link in your browser will show our template account name (e.g. `amberempowered8-alt.github.io`) instead of your own shop — not a great look for customers checking out your storefront.
+**1. Set it in GitHub:**
+In your repository, go to Settings → Pages. Scroll to Custom domain, enter your domain, and click Save. Check the box for Enforce HTTPS — this turns on your free SSL security certificate. (Sometimes it takes a couple minutes to update, so if it doesn't let you click it, know it's updating.)
 
-Already own a domain (Squarespace Domains, Namecheap, GoDaddy, Cloudflare)? You can point it at your new site in a few extra minutes:
+**2. Update your domain's DNS settings:**
+Log into your domain provider's DNS management panel and add:
+- CNAME Record: Host/Name: `www` → Value/Target: `YOUR_GITHUB_USERNAME.github.io`
+- A Records (for the root domain `@`), pointing to GitHub's IP addresses:
+  - 185.199.108.153
+  - 185.199.109.153
+  - 185.199.110.153
+  - 185.199.111.153
 
-1. In your domain registrar's DNS settings, add a `CNAME` record pointing your subdomain (e.g. `www`) to `<your-github-username>.github.io`.
-2. For your root domain (no `www`), add four `A` records pointing to GitHub's IPs: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-3. Back in **Settings → Pages** on GitHub, enter your custom domain and save. DNS changes can take a little while to fully kick in — usually minutes, sometimes longer.
-
-We strongly recommend doing this before sharing your link with real customers.
+DNS changes typically take 5–30 minutes to go live, sometimes longer.
 
 ## A Note on "Free"
-
 Hosting is completely free to start. If you ever outgrow the free tier (very high traffic), a low-cost paid step may apply — but you'll never be locked into a recurring platform fee just to keep your site online.
 
+## If Something Isn't Showing Up
+See the companion **Airtable Quick-Start SOP** and **GitHub Actions Quick-Start SOP** — they walk through, in order, exactly what to check before assuming anything's broken (it's almost always a normal sync delay, not a bug).
+
 ## Questions?
-
-This is a self-guided template.
-
-Join the AE9 Labs Discord: https://discord.gg/b45jmgHK3
-
-Support & Feedback form: https://airtable.com/app2dNCzkf61VdNKa/pagH5JffQIe7npirH/form
+This is a self-guided template. For setup help, reach out through your support link.
