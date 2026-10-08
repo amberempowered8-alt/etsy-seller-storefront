@@ -4,6 +4,7 @@
 - A ready-to-launch storefront for handmade, print-on-demand, or made-to-order shops
 - Free hosting, no monthly fees, ever
 - Site-wide details edited in one simple file — Products and Reviews update themselves from your own free Airtable database, no coding required
+- Click on the green 'Use this template' on the top right to begin. 
 
 ## What's Included in Your Package
 - `index.html` — your site's structure and content sections
